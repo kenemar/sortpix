@@ -92,7 +92,7 @@ EndFunc
 
 Func readSettings ()
    ;read file to array
-   Global $initFile = @LocalAppDataDir & "\CopyPics.ini"
+   Global $initFile = @LocalAppDataDir & "\sortPix.ini"
    If FileExists($initFile) = 1 Then
 	  Local $aSettings
 	  _FileReadToArray($initFile, $aSettings)
@@ -112,7 +112,7 @@ EndFunc
 
 Func writeSettings ()
    Local $aSettingsWrite[] = ["", GUICtrlRead($srcDir), GUICtrlRead($destDir), GUICtrlRead($jobNumPref), GUICtrlRead($jobNumSuf), GUICtrlRead($picsCheckbox), GUICtrlRead($jobNum)]
-   _FileWriteFromArray(@LocalAppDataDir & "\CopyPics.ini", $aSettingsWrite, 1)
+   _FileWriteFromArray(@LocalAppDataDir & "\sortPix.ini", $aSettingsWrite, 1)
 EndFunc
 
 Func moveFiles()
