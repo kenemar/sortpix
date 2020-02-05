@@ -55,12 +55,11 @@ $pathIsValid = GUICtrlCreateLabel("validate paths", 50, 190, 330)
 ;job number
 Local $jobNum = GUICtrlCreateInput($jobNumInit, 160, 245, 100, 32)
 GUICtrlSetFont($jobNum, 14, $FW_SEMIBOLD)
-$jobNumLabel = GUICtrlCreateLabel("Job Number", 160, 220, 90)
+$jobNumLabel = GUICtrlCreateLabel("Job Number", 165, 220, 90)
 GUICtrlSetFont($jobNumLabel, 11, $FW_BOLD)
 
 ;exit button
-Local $iCLOSEButton = GUICtrlCreateButton("Exit", 177, 290, 60)
-;Local $iTESTButton = GUICtrlCreateButton("Test", 200, 300, 60)
+Local $iCLOSEButton = GUICtrlCreateButton("Exit", 181, 300, 60)
 GUICtrlSetOnEvent($iCLOSEButton, "CLOSEButton")
 
 ;initalize reference time
