@@ -11,9 +11,9 @@
 #include <Date.au3>
 
 #pragma compile (CompanyName, 'Kendall Martin')
-#pragma compile (FileDescription, 'Script designed for sorting pictures to correct job folder as they are taken.')
+#pragma compile (FileDescription, 'Script for sorting pictures to correct job folder as they are taken.')
 #pragma compile (ProductName, 'SortPix')
-#pragma compile(FileVersion, 2020.2.1)
+#pragma compile(FileVersion, 2020.4.1)
 
 ;initialize from settings file in Local App Data
 readSettings ()
@@ -124,6 +124,7 @@ Func moveFiles()
 		 For $fileName in $aFileList
 			$created = FileGetTime ($srcPath & "\" & $fileName, $FT_CREATED, $FT_STRING)
 			If $created > $ref Then	;check if file was created after script started
+			   Sleep(500) ; Sleep to make sure file is fully written
 			   FileMove ($srcPath & "\" & $filename, $destPath & "\" & $fileName, $FC_CREATEPATH)   ;move file to destination directory
 			EndIf
 		 Next
