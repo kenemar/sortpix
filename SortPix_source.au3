@@ -13,14 +13,14 @@
 #pragma compile (CompanyName, 'Kendall Martin')
 #pragma compile (FileDescription, 'Script for sorting pictures to correct job folder as they are taken.')
 #pragma compile (ProductName, 'SortPix')
-#pragma compile(FileVersion, 2020.4.1)
+#pragma compile(FileVersion, 2020.4.2)
 
 ;initialize from settings file in Local App Data
 readSettings ()
 
 ;main GUI
 Opt("GUIOnEventMode", 1) ; Change to OnEvent mode
-Local $hMainGUI = GUICreate("SortPix", 420, 350)
+Local $hMainGUI = GUICreate("SortPix", 420, 410)
 GUISetOnEvent($GUI_EVENT_CLOSE, "CLOSEButton")
 GUISetState(@SW_SHOW, $hMainGUI)
 
@@ -54,13 +54,41 @@ GUICtrlSetState ( $picsCheckbox, $picsCheckboxInit )
 $pathIsValid = GUICtrlCreateLabel("validate paths", 50, 190, 330)
 
 ;job number
-Local $jobNum = GUICtrlCreateInput($jobNumInit, 160, 245, 100, 32)
+Local $jobNum = GUICtrlCreateInput($jobNumInit, 60, 245, 100, 32)
 GUICtrlSetFont($jobNum, 14, $FW_SEMIBOLD)
-$jobNumLabel = GUICtrlCreateLabel("Job Number", 165, 220, 90)
+$jobNumLabel = GUICtrlCreateLabel("Job Number", 65, 220, 90)
 GUICtrlSetFont($jobNumLabel, 11, $FW_BOLD)
 
+;job number edit buttons
+Local $NumBtn1 = GUICtrlCreateButton("1", 210, 225, 36, 32)
+Local $NumBtn2 = GUICtrlCreateButton("2", 250, 225, 36, 32)
+Local $NumBtn3 = GUICtrlCreateButton("3", 290, 225, 36, 32)
+Local $NumBtn4 = GUICtrlCreateButton("4", 330, 225, 36, 32)
+Local $NumBtn5 = GUICtrlCreateButton("5", 210, 265, 36, 32)
+Local $NumBtn6 = GUICtrlCreateButton("6", 250, 265, 36, 32)
+Local $NumBtn7 = GUICtrlCreateButton("7", 290, 265, 36, 32)
+Local $NumBtn8 = GUICtrlCreateButton("8", 330, 265, 36, 32)
+Local $NumBtn9 = GUICtrlCreateButton("9", 210, 305, 36, 32)
+Local $NumBtn0 = GUICtrlCreateButton("0", 250, 305, 36, 32)
+Local $NumBtnBack = GUICtrlCreateButton("<", 290, 305, 76, 32)
+GUICtrlSetOnEvent ($NumBtn1,"NumBtn1")
+GUICtrlSetOnEvent ($NumBtn2,"NumBtn2")
+GUICtrlSetOnEvent ($NumBtn3,"NumBtn3")
+GUICtrlSetOnEvent ($NumBtn4,"NumBtn4")
+GUICtrlSetOnEvent ($NumBtn5,"NumBtn5")
+GUICtrlSetOnEvent ($NumBtn6,"NumBtn6")
+GUICtrlSetOnEvent ($NumBtn7,"NumBtn7")
+GUICtrlSetOnEvent ($NumBtn8,"NumBtn8")
+GUICtrlSetOnEvent ($NumBtn9,"NumBtn9")
+GUICtrlSetOnEvent ($NumBtn0,"NumBtn0")
+GUICtrlSetOnEvent ($NumBtnBack,"NumBtnBack")
+
+;job folder button
+Local $iJobFolderButton = GUICtrlCreateButton("Open Job Folder", 60, 305, 100, 32)
+GUICtrlSetOnEvent($iJobFolderButton, "JOBFOLDERButton")
+
 ;exit button
-Local $iCLOSEButton = GUICtrlCreateButton("Exit", 181, 300, 60)
+Local $iCLOSEButton = GUICtrlCreateButton("Exit", 181, 360, 60, 30)
 GUICtrlSetOnEvent($iCLOSEButton, "CLOSEButton")
 
 ;initalize reference time
@@ -74,6 +102,71 @@ While 1
    If checkPaths() = 1 Then moveFiles() ;only run this loop while paths are valid
    Sleep(100) ; Sleep to reduce CPU usage
 WEnd
+
+Func JOBFOLDERButton()
+   ShellExecute($destPath)
+EndFunc
+
+Func NumBtn1 ()
+   GUICtrlSetData ($jobNum,(GUICtrlRead($jobNum)& "1"))
+   FocusJobNum()
+EndFunc
+
+Func NumBtn2 ()
+   GUICtrlSetData ($jobNum,(GUICtrlRead($jobNum)& "2"))
+   FocusJobNum()
+EndFunc
+
+Func NumBtn3 ()
+   GUICtrlSetData ($jobNum,(GUICtrlRead($jobNum)& "3"))
+   FocusJobNum()
+EndFunc
+
+Func NumBtn4 ()
+   GUICtrlSetData ($jobNum,(GUICtrlRead($jobNum)& "4"))
+   FocusJobNum()
+EndFunc
+
+Func NumBtn5 ()
+   GUICtrlSetData ($jobNum,(GUICtrlRead($jobNum)& "5"))
+   FocusJobNum()
+EndFunc
+
+Func NumBtn6 ()
+   GUICtrlSetData ($jobNum,(GUICtrlRead($jobNum)& "6"))
+   FocusJobNum()
+EndFunc
+
+Func NumBtn7 ()
+   GUICtrlSetData ($jobNum,(GUICtrlRead($jobNum)& "7"))
+   FocusJobNum()
+EndFunc
+
+Func NumBtn8 ()
+   GUICtrlSetData ($jobNum,(GUICtrlRead($jobNum)& "8"))
+   FocusJobNum()
+EndFunc
+
+Func NumBtn9 ()
+   GUICtrlSetData ($jobNum,(GUICtrlRead($jobNum)& "9"))
+   FocusJobNum()
+EndFunc
+
+Func NumBtn0 ()
+   GUICtrlSetData ($jobNum,(GUICtrlRead($jobNum)& "0"))
+   FocusJobNum()
+EndFunc
+
+Func NumBtnBack()
+   GUICtrlSetState ($jobNum,$GUI_FOCUS)
+   ControlSend($hMainGUI,"", $jobNum, "^{End}");Send Ctrl+End
+   ControlSend($hMainGUI,"", $jobNum, "{BACKSPACE}");Send Backspace
+EndFunc
+
+Func FocusJobNum()
+   GUICtrlSetState ($jobNum,$GUI_FOCUS)
+   ControlSend($hMainGUI,"", $jobNum, "^{End}");Send Ctrl+End
+EndFunc
 
 Func CLOSEButton() ;write config to file and close
 	writeSettings()
