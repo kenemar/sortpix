@@ -20,7 +20,7 @@ readSettings ()
 
 ;main GUI
 Opt("GUIOnEventMode", 1) ; Change to OnEvent mode
-Local $hMainGUI = GUICreate("SortPix", 420, 410)
+Local $hMainGUI = GUICreate("SortPix", 400, 410)
 GUISetOnEvent($GUI_EVENT_CLOSE, "CLOSEButton")
 GUISetState(@SW_SHOW, $hMainGUI)
 
@@ -28,14 +28,14 @@ GUISetState(@SW_SHOW, $hMainGUI)
 GUICtrlCreateLabel("Path to source directory (Camera Roll)", 20, 10)
 Local $srcDir = GUICtrlCreateLabel($sourceFolderInit, 20, 30, 250 , 20, $SS_LEFTNOWORDWRAP)
 GUICtrlSetFont($srcDir, 8.5, $FW_BOLD, $GUI_FONTUNDER)
-Local $browseSourceButton = GUICtrlCreateButton("Browse", 280, 27, 70, 24)
+Local $browseSourceButton = GUICtrlCreateButton("Browse", 295, 27, 70, 27)
 GUICtrlSetOnEvent($browseSourceButton, "browseSource")
 
 ;destination
 GUICtrlCreateLabel("Path to destination parent directory (folder that contains the job folders)", 20, 60)
 Local $destDir = GUICtrlCreateLabel($destFolderInit, 20, 80, 250, 20)
 GUICtrlSetFont($destDir, 8.5, $FW_BOLD, $GUI_FONTUNDER)
-Local $browseDestButton = GUICtrlCreateButton("Browse", 280, 78, 70, 24)
+Local $browseDestButton = GUICtrlCreateButton("Browse", 295, 78, 70, 27)
 GUICtrlSetOnEvent($browseDestButton, "browseDest")
 
 ;job folder name
@@ -97,16 +97,25 @@ $aRef = StringSplit(_NowCalc(), "/: ")
 _ArrayDelete ($aRef, 0)
 $ref = _ArrayToString( $aRef, "")
 
+;initialize destination folder path
+Global $destPath = GUICtrlRead($destDir)
 
+;main loop
 While 1
    If checkPaths() = 1 Then moveFiles() ;only run this loop while paths are valid
    Sleep(100) ; Sleep to reduce CPU usage
 WEnd
 
 Func JOBFOLDERButton()
-   ShellExecute($destPath)
+   ;check if job folder path is valid before attempting to open
+   If _WinAPI_PathIsDirectory ($destPath) Then
+	  ShellExecute($destPath)
+   Else
+	  MsgBox($MB_ICONERROR, "Invalid Job Folder", "Set valid Source and Destination and Job Number.")
+   EndIf
 EndFunc
 
+;functions for job number edit buttons
 Func NumBtn1 ()
    GUICtrlSetData ($jobNum,(GUICtrlRead($jobNum)& "1"))
    FocusJobNum()
