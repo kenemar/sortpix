@@ -13,7 +13,7 @@
 #pragma compile (CompanyName, 'Kendall Martin')
 #pragma compile (FileDescription, 'Script for sorting pictures to correct job folder as they are taken.')
 #pragma compile (ProductName, 'SortPix')
-#pragma compile(FileVersion, 2020.4.2)
+#pragma compile(FileVersion, 2020.4.3)
 
 ;initialize from settings file in Local App Data
 readSettings ()
