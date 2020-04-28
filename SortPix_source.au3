@@ -13,14 +13,19 @@
 #pragma compile (CompanyName, 'Kendall Martin')
 #pragma compile (FileDescription, 'Script for sorting pictures to correct job folder as they are taken.')
 #pragma compile (ProductName, 'SortPix')
-#pragma compile(FileVersion, 2020.4.3)
+#pragma compile(FileVersion, 2020.4.4)
 
 ;initialize from settings file in Local App Data
 readSettings ()
 
 ;main GUI
 Opt("GUIOnEventMode", 1) ; Change to OnEvent mode
-Local $hMainGUI = GUICreate("SortPix", 400, 410)
+;start GUI at the right of the desktop or not
+If $GUIPosInit = 1 Then
+   Local $hMainGUI = GUICreate("SortPix", 400, 450,@DesktopWidth - 420)
+Else
+   Local $hMainGUI = GUICreate("SortPix", 400, 450)
+Endif
 GUISetOnEvent($GUI_EVENT_CLOSE, "CLOSEButton")
 GUISetState(@SW_SHOW, $hMainGUI)
 
@@ -87,8 +92,12 @@ GUICtrlSetOnEvent ($NumBtnBack,"NumBtnBack")
 Local $iJobFolderButton = GUICtrlCreateButton("Open Job Folder", 60, 305, 100, 32)
 GUICtrlSetOnEvent($iJobFolderButton, "JOBFOLDERButton")
 
+;GUI position checkbox
+Global $GUIPosCheckbox = GUICtrlCreateCheckbox("Start SortPix at right of screen", 120, 355, 280, 25)
+GUICtrlSetState ( $GUIPosCheckbox, $GUIPosInit )
+
 ;exit button
-Local $iCLOSEButton = GUICtrlCreateButton("Exit", 181, 360, 60, 30)
+Local $iCLOSEButton = GUICtrlCreateButton("Exit", 170, 400, 60, 30)
 GUICtrlSetOnEvent($iCLOSEButton, "CLOSEButton")
 
 ;initalize reference time
@@ -198,8 +207,13 @@ Func readSettings ()
    If FileExists($initFile) = 1 Then
 	  Local $aSettings
 	  _FileReadToArray($initFile, $aSettings)
-   Else
-	  Local $aSettings = ["","select folder","select folder","0","","",""]
+	  ;verify array contains expected number of elements, if not, add empty elements
+	  While $aSettings[0] < 7
+		 _ArrayAdd($aSettings, "")
+		 $aSettings[0] = $aSettings[0] + 1
+	  WEnd
+   Else		;if no config file, load default values
+	  Local $aSettings = ["","select folder","select folder","0","","","",""]
    EndIf
 
    ;load variables from array: source dir, dest dir, pic checkbox, jobnum pref and suf, job num
@@ -209,11 +223,12 @@ Func readSettings ()
    Global $jobNumSufInit = $aSettings[4]
    Global $picsCheckboxInit = $aSettings[5]
    Global $jobNumInit = $aSettings[6]
+   Global $GUIPosInit = $aSettings[7]
 
 EndFunc
 
 Func writeSettings ()
-   Local $aSettingsWrite[] = ["", GUICtrlRead($srcDir), GUICtrlRead($destDir), GUICtrlRead($jobNumPref), GUICtrlRead($jobNumSuf), GUICtrlRead($picsCheckbox), GUICtrlRead($jobNum)]
+   Local $aSettingsWrite[] = ["", GUICtrlRead($srcDir), GUICtrlRead($destDir), GUICtrlRead($jobNumPref), GUICtrlRead($jobNumSuf), GUICtrlRead($picsCheckbox), GUICtrlRead($jobNum), GUICtrlRead($GUIPosCheckbox)]
    _FileWriteFromArray(@LocalAppDataDir & "\sortPix.ini", $aSettingsWrite, 1)
 EndFunc
 
