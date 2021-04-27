@@ -13,7 +13,7 @@
 #pragma compile (CompanyName, 'Kendall Martin')
 #pragma compile (FileDescription, 'Script for sorting pictures to correct job folder as they are taken.')
 #pragma compile (ProductName, 'SortPix')
-#pragma compile(FileVersion, 2020.4.4)
+#pragma compile(FileVersion, 2021.4.1)
 
 ;initialize from settings file in Local App Data
 readSettings ()
@@ -202,20 +202,40 @@ Func browseDest ()
 EndFunc
 
 Func readSettings ()
-   ;read file to array
-   Global $initFile = @LocalAppDataDir & "\sortPix.ini"
-   If FileExists($initFile) = 1 Then
+   ;this code is to accomodate the old array-based config file and the new standard format .ini file.
+   ;if old config file exits, read contents and then delete it
+   Global $oldInitFile = @LocalAppDataDir & "\sortPix.ini"
+   Global $initFile = @LocalAppDataDir & "\Sortpix\config.ini"
+   If FileExists($oldInitFile) = 1 Then
+	  ;read file to array
 	  Local $aSettings
-	  _FileReadToArray($initFile, $aSettings)
+	  _FileReadToArray($oldInitFile, $aSettings)
 	  ;verify array contains expected number of elements, if not, add empty elements
 	  While $aSettings[0] < 7
 		 _ArrayAdd($aSettings, "")
 		 $aSettings[0] = $aSettings[0] + 1
 	  WEnd
-   Else		;if no config file, load default values
-	  Local $aSettings = ["","select folder","select folder","0","","","",""]
+	  parseInitArray($aSettings)
+	  FileDelete($oldInitFile)	;delete old configuration file
+
+   Else
+	  ;load configuration from .ini file
+	  Global $sourceFolderInit = IniRead($initFile, "folders", "sourceFolderPath", "select folder")
+	  Global $destFolderInit = IniRead($initFile, "folders", "destinationFolderPath", "select folder")
+	  Global $picsCheckboxInit = IniRead($initFile, "folders", "picsFolderCheckbox", "0")
+	  Global $jobNumInit = IniRead($initFile, "jobNumber", "jobNumber", "")
+	  Global $jobNumPrefInit = IniRead($initFile, "jobNumber", "jobNumberPrefix", "0")
+	  Global $jobNumSufInit = IniRead($initFile, "jobNumber", "jobNumberSuffix", "")
+	  Global $GUIPosInit = IniRead($initFile, "GUI", "GUIPositionCheckbox", "1")
+
    EndIf
 
+
+
+EndFunc
+
+Func parseInitArray($aSettings)
+   ;only for loading config from old array-based config file
    ;load variables from array: source dir, dest dir, pic checkbox, jobnum pref and suf, job num
    Global $sourceFolderInit = $aSettings[1]
    Global $destFolderInit = $aSettings[2]
@@ -228,8 +248,20 @@ Func readSettings ()
 EndFunc
 
 Func writeSettings ()
-   Local $aSettingsWrite[] = ["", GUICtrlRead($srcDir), GUICtrlRead($destDir), GUICtrlRead($jobNumPref), GUICtrlRead($jobNumSuf), GUICtrlRead($picsCheckbox), GUICtrlRead($jobNum), GUICtrlRead($GUIPosCheckbox)]
-   _FileWriteFromArray(@LocalAppDataDir & "\sortPix.ini", $aSettingsWrite, 1)
+   ;check for config folder, create if it doesn't exist
+   If (_WinAPI_PathIsDirectory (@LocalAppDataDir & "\Sortpix") = False) Then
+	  DirCreate(@LocalAppDataDir & "\Sortpix")
+   EndIf
+
+   ;write ini File
+   IniWrite ($initFile,"folders", "sourceFolderPath", GUICtrlRead($srcDir))
+   IniWrite ($initFile,"folders", "destinationFolderPath", GUICtrlRead($destDir))
+   IniWrite ($initFile,"folders", "picsFolderCheckbox", GUICtrlRead($picsCheckbox))
+   IniWrite ($initFile,"jobNumber", "jobNumber", GUICtrlRead($jobNum))
+   IniWrite ($initFile,"jobNumber", "jobNumberPrefix", GUICtrlRead($jobNumPref))
+   IniWrite ($initFile,"jobNumber", "jobNumberSuffix", GUICtrlRead($jobNumSuf))
+   IniWrite ($initFile,"GUI", "GUIPositionCheckbox", GUICtrlRead($GUIPosCheckbox))
+
 EndFunc
 
 Func moveFiles()
